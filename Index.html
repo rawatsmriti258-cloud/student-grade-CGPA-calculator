@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CGPA Calculator & Target Predictor</title>
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js for Visual Analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <i class="fa-solid fa-graduation-cap"></i>
+                <span>GradeTracker Pro</span>
+            </div>
+            <div class="header-actions">
+                <button id="reset-all-btn" class="btn btn-danger-outline" title="Reset All Data">
+                    <i class="fa-solid fa-trash-can"></i> Reset
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Dashboard Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon bg-blue"><i class="fa-solid fa-chart-line"></i></div>
+                <div class="stat-info">
+                    <span class="stat-title">Current CGPA</span>
+                    <h2 id="overall-cgpa-display">0.00</h2>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon bg-green"><i class="fa-solid fa-book-bookmark"></i></div>
+                <div class="stat-info">
+                    <span class="stat-title">Total Completed Credits</span>
+                    <h2 id="total-credits-display">0</h2>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon bg-purple"><i class="fa-solid fa-calculator"></i></div>
+                <div class="stat-info">
+                    <span class="stat-title">Active Semester SGPA</span>
+                    <h2 id="current-sgpa-display">0.00</h2>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <nav class="tabs">
+            <button class="tab-btn active" data-tab="calculator-tab">
+                <i class="fa-solid fa-list-check"></i> Semester Calculator
+            </button>
+            <button class="tab-btn" data-tab="predictor-tab">
+                <i class="fa-solid fa-bullseye"></i> CGPA Target Predictor
+            </button>
+            <button class="tab-btn" data-tab="analytics-tab">
+                <i class="fa-solid fa-chart-pie"></i> Analytics & Scale
+            </button>
+        </nav>
+
+        <!-- Tab 1: Semester Calculator -->
+        <section id="calculator-tab" class="tab-content active">
+            <!-- Prior Academic History -->
+            <div class="card">
+                <h3><i class="fa-solid fa-clock-rotate-left"></i> Previous Academic Record (Optional)</h3>
+                <p class="subtitle">Enter your previous cumulative totals if you want to update your overall CGPA with this semester's grades.</p>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="prev-cgpa">Previous Cumulative CGPA</label>
+                        <input type="number" id="prev-cgpa" placeholder="e.g. 7.50" min="0" max="10" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label for="prev-credits">Previous Total Earned Credits</label>
+                        <input type="number" id="prev-credits" placeholder="e.g. 60" min="0" step="0.5">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Current Semester Subjects -->
+            <div class="card">
+                <div class="card-header">
+                    <div>
+                        <h3><i class="fa-solid fa-book-open"></i> Current Semester Courses</h3>
+                        <p class="subtitle">Add your subjects, credit weight, and expected letter grades or percentage marks.</p>
+                    </div>
+                    <button id="add-course-btn" class="btn btn-primary">
+                        <i class="fa-solid fa-plus"></i> Add Subject
+                    </button>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="course-table">
+                        <thead>
+                            <tr>
+                                <th>Subject Name</th>
+                                <th>Credits</th>
+                                <th>Grade / Marks</th>
+                                <th>Grade Point</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="course-list">
+                            <!-- Course rows injected dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="results-banner">
+                    <div class="res-item">
+                        <span>Semester SGPA:</span>
+                        <strong id="calc-sgpa">0.00</strong>
+                    </div>
+                    <div class="res-item">
+                        <span>New Overall CGPA:</span>
+                        <strong id="calc-new-cgpa">0.00</strong>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tab 2: CGPA Target Predictor -->
+        <section id="predictor-tab" class="tab-content">
+            <div class="card">
+                <h3><i class="fa-solid fa-crosshairs"></i> Target CGPA Calculator</h3>
+                <p class="subtitle">Calculate the exact average GPA you need in your remaining semesters to achieve your target graduation CGPA.</p>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="pred-current-cgpa">Current CGPA</label>
+                        <input type="number" id="pred-current-cgpa" placeholder="e.g. 7.2" min="0" max="10" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label for="pred-completed-credits">Completed Credits So Far</label>
+                        <input type="number" id="pred-completed-credits" placeholder="e.g. 80" min="0" step="0.5">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="pred-target-cgpa">Desired Target CGPA</label>
+                        <input type="number" id="pred-target-cgpa" placeholder="e.g. 8.0" min="0" max="10" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label for="pred-remaining-credits">Remaining Credits to Complete</label>
+                        <input type="number" id="pred-remaining-credits" placeholder="e.g. 40" min="1" step="0.5">
+                    </div>
+                </div>
+
+                <button id="calculate-predictor-btn" class="btn btn-success btn-block">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> Predict Required Performance
+                </button>
+            </div>
+
+            <div id="predictor-result-card" class="card hidden">
+                <h3>Prediction Results</h3>
+                <div class="predictor-display">
+                    <div class="pred-metric">
+                        <span>Required GPA in Remaining Credits</span>
+                        <h1 id="required-gpa-val">0.00</h1>
+                    </div>
+                    <div id="status-badge" class="badge">Checking...</div>
+                </div>
+                <p id="predictor-analysis" class="analysis-text"></p>
+            </div>
+        </section>
+
+        <!-- Tab 3: Analytics & Scale -->
+        <section id="analytics-tab" class="tab-content">
+            <div class="analytics-grid">
+                <div class="card">
+                    <h3><i class="fa-solid fa-chart-column"></i> Current Semester Grade Distribution</h3>
+                    <div class="chart-container">
+                        <canvas id="gradeChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3><i class="fa-solid fa-table"></i> Standard 10-Point Grading Scale</h3>
+                    <table class="scale-table">
+                        <thead>
+                            <tr>
+                                <th>Grade</th>
+                                <th>Marks Range (%)</th>
+                                <th>Grade Point</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>O</td><td>90 - 100</td><td>10.0</td><td>Outstanding</td></tr>
+                            <tr><td>A+</td><td>80 - 89</td><td>9.0</td><td>Excellent</td></tr>
+                            <tr><td>A</td><td>70 - 79</td><td>8.0</td><td>Very Good</td></tr>
+                            <tr><td>B+</td><td>60 - 69</td><td>7.0</td><td>Good</td></tr>
+                            <tr><td>B</td><td>55 - 59</td><td>6.0</td><td>Above Average</td></tr>
+                            <tr><td>C</td><td>50 - 54</td><td>5.0</td><td>Average</td></tr>
+                            <tr><td>P</td><td>40 - 49</td><td>4.0</td><td>Pass</td></tr>
+                            <tr><td>F</td><td>Below 40</td><td>0.0</td><td>Fail</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
